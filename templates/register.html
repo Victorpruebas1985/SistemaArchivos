@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Crear Cuenta</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-msg">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/register">
+            <div>
+                <label>Usuario</label>
+                <input type="text" name="username" required placeholder="Elige un nombre de usuario">
+            </div>
+
+            <div>
+                <label>Email</label>
+                <input type="email" name="email" required placeholder="tu@email.com">
+            </div>
+
+            <div>
+                <label>Contraseña</label>
+                <input type="password" name="password" required placeholder="Elige una contraseña segura">
+            </div>
+
+            <button type="submit" class="btn-primary">Registrarse</button>
+        </form>
+
+        <a href="/login" class="link-text">¿Ya tienes cuenta? Inicia sesión</a>
+    </div>
+</body>
+</html>

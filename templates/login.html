@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Bienvenido de nuevo</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-msg">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/login">
+            <div>
+                <label>Usuario</label>
+                <input type="text" name="username" required placeholder="Ingresa tu usuario">
+            </div>
+            <div>
+                <label>Contraseña</label>
+                <input type="password" name="password" required placeholder="Ingresa tu contraseña">
+            </div>
+            <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+        
+        <a href="/register" class="link-text">¿No tienes cuenta? Regístrate aquí</a>
+    </div>
+</body>
+</html>

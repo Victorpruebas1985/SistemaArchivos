@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Archivos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="/logout" class="logout-link">Cerrar Sesión</a>
+        <h1>Hola, {{ name }} 👋</h1>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-msg">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px dashed #ccc;">
+            <h3>📤 Subir nuevo archivo</h3>
+            <form method="POST" action="/upload" enctype="multipart/form-data">
+                <input type="file" name="file">
+                <button type="submit" class="btn-upload">Subir Archivo</button>
+            </form>
+        </div>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+        <h3>📁 Tus Archivos</h3>
+        <ul>
+            {% for file in files %}
+                <li>
+                    <span>{{ file.filename }}</span>
+                    <div>
+                        <a href="{{ url_for('download', file_id=file.id) }}">
+                            <button class="btn-download">Bajar</button>
+                        </a>
+                        <a href="{{ url_for('delete', file_id=file.id) }}">
+                            <button class="btn-delete">Borrar</button>
+                        </a>
+                    </div>
+                </li>
+            {% else %}
+                <p style="text-align: center; color: #777;">No has subido archivos aún.</p>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
