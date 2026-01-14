@@ -101,3 +101,27 @@ a { text-decoration: none; }
     margin-bottom: 15px;
     border: 1px solid #ffeeba;
 }
+
+/* Botones de Privacidad */
+.btn-privacy {
+    padding: 5px 10px;
+    font-size: 13px;
+    margin-right: 5px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white; 
+}
+
+/* Estado actual es Privado -> Botón para hacerlo Público (Verde) */
+.make-public {
+    background-color: #27ae60; 
+    border: 1px solid #219150;
+}
+.make-public:hover { background-color: #2ecc71; }
+
+/* Estado actual es Público -> Botón para hacerlo Privado (Naranja) */
+.make-private {
+    background-color: #f39c12; 
+    border: 1px solid #d35400;
+}
+.make-private:hover { background-color: #e67e22; }

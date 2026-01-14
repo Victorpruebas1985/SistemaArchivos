@@ -21,7 +21,14 @@
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px dashed #ccc;">
             <h3>📤 Subir nuevo archivo</h3>
             <form method="POST" action="/upload" enctype="multipart/form-data">
-                <input type="file" name="file">
+                <input type="file" name="file" required>
+                
+                <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" name="is_public" id="publicCheck" style="width: auto;">
+                    <label for="publicCheck" style="margin: 0; cursor: pointer; color: #555;">
+                        Hacer visible para todo el público 🌍
+                    </label>
+                </div>
                 <button type="submit" class="btn-upload">Subir Archivo</button>
             </form>
         </div>
@@ -31,14 +38,31 @@
         <h3>📁 Tus Archivos</h3>
         <ul>
             {% for file in files %}
-                <li>
-                    <span>{{ file.filename }}</span>
-                    <div>
+                <li style="display: flex; justify-content: space-between; align-items: center;">
+                    
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.2em;">
+                            {% if file.is_public %} 🌍 {% else %} 🔒 {% endif %}
+                        </span>
+                        <strong>{{ file.filename }}</strong>
+                    </div>
+
+                    <div style="display: flex; gap: 5px;">
+                        
+                        <a href="{{ url_for('toggle_privacy', file_id=file.id) }}" style="text-decoration: none;">
+                            {% if file.is_public %}
+                                <button class="btn-privacy make-private" title="Hacer Privado">Cambiar a 🔒</button>
+                            {% else %}
+                                <button class="btn-privacy make-public" title="Hacer Público">Cambiar a 🌍</button>
+                            {% endif %}
+                        </a>
+
                         <a href="{{ url_for('download', file_id=file.id) }}">
                             <button class="btn-download">Bajar</button>
                         </a>
+                        
                         <a href="{{ url_for('delete', file_id=file.id) }}">
-                            <button class="btn-delete">Borrar</button>
+                            <button class="btn-delete">X</button>
                         </a>
                     </div>
                 </li>

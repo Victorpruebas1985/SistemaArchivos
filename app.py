@@ -1,4 +1,5 @@
 import os
+from itsdangerous import URLSafeTimedSerializer
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -16,6 +17,8 @@ app.config['UPLOAD_FOLDER'] = 'uploads' # Carpeta donde se guardan los archivos 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+# Generador de Tokens (Usa tu SECRET_KEY para firmarlos)
+serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 # 3. Modelos de Base de Datos
 class User(UserMixin, db.Model):
@@ -31,6 +34,7 @@ class File(db.Model):
     filename = db.Column(db.String(300))
     # Vinculamos el archivo a un usuario (Dueño)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    is_public = db.Column(db.Boolean, default=False)
 
 # 4. Loader de usuario (Requerido por Flask-Login)
 @login_manager.user_loader
@@ -40,7 +44,9 @@ def load_user(user_id):
 # 5. Rutas
 @app.route('/')
 def home():
-    return "<h1>Sistema de Archivos Activo. <br> <a href='/login'>Iniciar Sesión</a> o <a href='/register'>Registrarse</a></h1>"
+    # Buscar todos los archivos donde is_public es True
+    public_files = File.query.filter_by(is_public=True).all()
+    return render_template('home.html', files=public_files)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -90,7 +96,6 @@ def dashboard():
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload():
-    # Verificamos si la petición tiene la parte del archivo
     if 'file' not in request.files:
         flash('No se seleccionó ningún archivo')
         return redirect(url_for('dashboard'))
@@ -104,28 +109,41 @@ def upload():
     if file:
         filename = secure_filename(file.filename)
         
-        # 1. Guardar archivo físico en la carpeta
-        # Asegúrate de haber creado la carpeta 'uploads'
+        # Guardar físico
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
-        # 2. Guardar registro en la base de datos vinculado al usuario
-        new_file = File(filename=filename, owner=current_user)
+        # --- CAPTURAR SI ES PÚBLICO ---
+        # El checkbox HTML envía 'on' si está marcado, o None si no.
+        is_public_val = True if request.form.get('is_public') == 'on' else False
+        
+        new_file = File(filename=filename, owner=current_user, is_public=is_public_val)
+        # ------------------------------
+
         db.session.add(new_file)
         db.session.commit()
         
         flash('Archivo subido exitosamente')
         return redirect(url_for('dashboard'))
-@app.route('/download/<int:file_id>')
-@login_required
-def download(file_id):
-    file_data = File.query.get_or_404(file_id) # Busca el archivo o da error 404 si no existe
 
-    # SEGURIDAD: Verificar que el archivo pertenezca al usuario logueado
+@app.route('/download/<int:file_id>')
+# NOTA: NO ponemos @login_required aquí porque queremos permitir descargas públicas
+def download(file_id):
+    file_data = File.query.get_or_404(file_id) 
+    
+    # CASO 1: Si el archivo es PÚBLICO -> Cualquiera puede bajarlo
+    if file_data.is_public:
+        return send_from_directory(app.config['UPLOAD_FOLDER'], file_data.filename, as_attachment=True)
+
+    # CASO 2: Si el archivo es PRIVADO -> Verificamos que estés logueado y seas el dueño
+    if not current_user.is_authenticated:
+        flash('Debes iniciar sesión para ver este archivo privado.')
+        return redirect(url_for('login'))
+
     if file_data.owner != current_user:
         flash('¡No tienes permiso para ver este archivo!')
         return redirect(url_for('dashboard'))
 
-    # Enviar el archivo
+    # Si pasaste las validaciones, te enviamos el archivo
     return send_from_directory(app.config['UPLOAD_FOLDER'], file_data.filename, as_attachment=True)
 @app.route('/delete/<int:file_id>')
 @login_required
@@ -151,12 +169,82 @@ def delete(file_id):
 
     flash('Archivo eliminado correctamente.')
     return redirect(url_for('dashboard'))
+
+# Ruta 1: Solicitar recuperación
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            # Generar token (Vence en 3600 segundos = 1 hora)
+            token = serializer.dumps(user.email, salt='recuperar-clave')
+            
+            # Crear el link completo
+            link = url_for('reset_password', token=token, _external=True)
+            
+            # SIMULACIÓN DE EMAIL: Imprimir en la terminal
+            print(f"\n========================================")
+            print(f"📧 SIMULACIÓN DE EMAIL PARA: {email}")
+            print(f"🔗 LINK DE RECUPERACIÓN: {link}")
+            print(f"========================================\n")
+            
+            flash('Se ha enviado un enlace de recuperación a tu correo (¡Mira la terminal!).')
+            return redirect(url_for('login'))
+        else:
+            flash('Ese correo no está registrado.')
+
+    return render_template('forgot_password.html')
+
+# Ruta 2: Cambiar la contraseña usando el Token
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        # Verificar token (Max 1 hora de antigüedad)
+        email = serializer.loads(token, salt='recuperar-clave', max_age=3600)
+    except:
+        flash('El enlace es inválido o ha expirado.')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        
+        # Buscar usuario y actualizar contraseña
+        user = User.query.filter_by(email=email).first()
+        user.password = generate_password_hash(password, method='scrypt')
+        db.session.commit()
+
+        flash('¡Tu contraseña ha sido actualizada! Inicia sesión.')
+        return redirect(url_for('login'))
+
+    return render_template('reset_password.html')
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
+@app.route('/toggle_privacy/<int:file_id>')
+@login_required
+def toggle_privacy(file_id):
+    file = File.query.get_or_404(file_id)
+    
+    # Seguridad: Verificar que eres el dueño
+    if file.owner != current_user:
+        flash('No tienes permiso para modificar este archivo.')
+        return redirect(url_for('dashboard'))
+    
+    # EL INTERRUPTOR: Cambiar de True a False o viceversa
+    file.is_public = not file.is_public
+    db.session.commit()
+    
+    # Mensaje de confirmación
+    status = "PÚBLICO 🌍" if file.is_public else "PRIVADO 🔒"
+    flash(f'El archivo "{file.filename}" ahora es {status}.')
+    
+    return redirect(url_for('dashboard'))
 # 6. Arranque
 if __name__ == '__main__':
     with app.app_context():

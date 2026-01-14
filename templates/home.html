@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorador de Archivos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-input { flex-grow: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Explorador Inteligente 🧠</h1>
+        
+        <div style="text-align: right; margin-bottom: 15px;">
+            {% if current_user.is_authenticated %}
+                <span>Hola, <b>{{ current_user.username }}</b></span> | 
+                <a href="/dashboard">Ir a mi Panel</a>
+            {% else %}
+                <a href="/login">Iniciar Sesión</a>
+            {% endif %}
+        </div>
+
+        <form action="/search" method="GET" class="search-box">
+            <input type="text" name="q" class="search-input" placeholder="Buscar archivos (ej: 'reporrte', 'ftos')..." value="{{ search_query if search_query else '' }}">
+            <button type="submit" class="btn-primary" style="width: auto;">Buscar</button>
+        </form>
+
+        {% if search_query %}
+            <p>Resultados para: <strong>"{{ search_query }}"</strong> <a href="/">(Ver todos)</a></p>
+        {% endif %}
+
+        <hr>
+
+        <ul>
+            {% for file in files %}
+                <li>
+                    <span>
+                        {% if file.is_public %} 🌍 {% else %} 🔒 {% endif %}
+                        <strong>{{ file.filename }}</strong> 
+                        <br><small style="color: grey;">Subido por: {{ file.owner.username }}</small>
+                    </span>
+                    <a href="{{ url_for('download', file_id=file.id) }}">
+                        <button class="btn-download">Descargar</button>
+                    </a>
+                </li>
+            {% else %}
+                <p style="text-align: center; color: #777;">
+                    {% if search_query %}
+                        No encontramos nada parecido a "{{ search_query }}".
+                    {% else %}
+                        No hay archivos públicos disponibles.
+                    {% endif %}
+                </p>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
