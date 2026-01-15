@@ -1,127 +1,248 @@
-/* style.css - Diseño Moderno */
+/* style.css - Diseño Moderno 2026 */
+
+:root {
+    --primary-color: #4f46e5; /* Índigo moderno */
+    --primary-hover: #4338ca;
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    box-sizing: border-box;
+}
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+    background-size: 20px 20px; /* Sutil patrón de puntos */
     margin: 0;
-    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: #333;
+    color: var(--text-main);
+    padding: 20px;
 }
 
-/* Contenedor principal (Tarjeta blanca) */
+/* Tarjeta Principal */
 .container {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg);
     width: 100%;
-    max-width: 600px; /* Ancho máximo de la tarjeta */
+    max-width: 650px;
+    padding: 2.5rem;
+    border-radius: 1.5rem; /* Bordes muy redondeados */
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
+/* Títulos */
 h1, h2 {
-    color: #2c3e50;
+    font-weight: 800;
+    color: var(--text-main);
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.025em;
 }
 
-/* Formularios */
+h3 {
+    font-weight: 600;
+    margin-top: 2rem;
+    color: var(--text-main);
+    border-bottom: 2px solid var(--bg-color);
+    padding-bottom: 10px;
+}
+
+/* Enlaces y Textos */
+a { text-decoration: none; color: inherit; }
+
+.link-text {
+    text-align: center;
+    display: block;
+    margin-top: 1.5rem;
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.link-text:hover { text-decoration: underline; }
+
+.logout-link {
+    float: right;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.logout-link:hover { color: var(--danger); }
+
+/* Formularios e Inputs */
 form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
 }
 
 label {
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 0.25rem;
+    display: block;
 }
 
 input[type="text"],
 input[type="password"],
+input[type="email"],
 input[type="file"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+    background-color: #f9fafb;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    background-color: white;
+}
+
+/* Buscador Específico */
+.search-container { position: relative; margin-bottom: 2rem; }
+.search-box { display: flex; gap: 10px; }
+.search-input {
+    border-radius: 50px !important; /* Estilo píldora */
+    padding-left: 1.5rem !important;
+    border: 1px solid #d1d5db;
+    box-shadow: var(--shadow-sm);
 }
 
 /* Botones Generales */
 button {
-    padding: 10px 20px;
+    padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background 0.3s;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-/* Colores de Botones */
-.btn-primary { background-color: #3498db; color: white; width: 100%; }
-.btn-primary:hover { background-color: #2980b9; }
+button:active { transform: scale(0.98); }
 
-.btn-upload { background-color: #27ae60; color: white; width: 100%; margin-top: 10px;}
-.btn-upload:hover { background-color: #219150; }
+/* Variantes de Botones */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    width: 100%;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+}
+.btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
 
-.btn-download { background-color: #3498db; color: white; text-decoration: none; padding: 5px 10px; font-size: 14px; }
-.btn-delete { background-color: #e74c3c; color: white; text-decoration: none; padding: 5px 10px; font-size: 14px; margin-left: 5px;}
+.btn-upload {
+    background-color: var(--text-main);
+    color: white;
+    width: 100%;
+    margin-top: 1rem;
+}
+.btn-upload:hover { background-color: black; }
+
+.btn-download {
+    background-color: #e0e7ff; /* Azul muy suave */
+    color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+.btn-download:hover { background-color: #c7d2fe; }
+
+.btn-delete {
+    background-color: #fee2e2; /* Rojo suave */
+    color: var(--danger);
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+.btn-delete:hover { background-color: #fecaca; }
+
+/* Botones de Privacidad (Tags) */
+.btn-privacy {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+}
+.make-public { background-color: #ecfdf5; color: var(--success); border: 1px solid #d1fae5; }
+.make-public:hover { background-color: #d1fae5; }
+
+.make-private { background-color: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
+.make-private:hover { background-color: #fde68a; }
 
 /* Lista de Archivos */
-ul {
-    list-style-type: none;
-    padding: 0;
-}
+ul { list-style: none; padding: 0; }
 
 li {
-    background: #f9f9f9;
-    border-bottom: 1px solid #eee;
-    padding: 15px;
+    background: white;
+    border: 1px solid #f3f4f6;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+    border-radius: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-li:last-child { border-bottom: none; }
+li:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: #e5e7eb;
+}
 
-/* Enlaces y Textos */
-a { text-decoration: none; }
-.link-text { text-align: center; display: block; margin-top: 15px; color: #3498db; }
-.logout-link { display: block; text-align: right; margin-bottom: 10px; color: #7f8c8d; }
+/* Sugerencias de búsqueda (Dropdown) */
+.suggestions-list {
+    position: absolute;
+    top: 110%;
+    left: 0; right: 0;
+    background: white;
+    border: 1px solid #f3f4f6;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-lg);
+    list-style: none;
+    padding: 0.5rem;
+    z-index: 1000;
+    display: none;
+}
+.suggestions-list li {
+    margin: 0;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+}
+.suggestions-list li:hover { background-color: #f9fafb; cursor: pointer; }
 
-/* Mensajes de Alerta */
+/* Mensajes Flash */
 .flash-msg {
-    background-color: #fff3cd;
-    color: #856404;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #ffeeba;
+    background-color: #eff6ff;
+    color: #1e40af;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary-color);
+    font-size: 0.9rem;
 }
-
-/* Botones de Privacidad */
-.btn-privacy {
-    padding: 5px 10px;
-    font-size: 13px;
-    margin-right: 5px;
-    border-radius: 4px;
-    font-weight: bold;
-    color: white; 
-}
-
-/* Estado actual es Privado -> Botón para hacerlo Público (Verde) */
-.make-public {
-    background-color: #27ae60; 
-    border: 1px solid #219150;
-}
-.make-public:hover { background-color: #2ecc71; }
-
-/* Estado actual es Público -> Botón para hacerlo Privado (Naranja) */
-.make-private {
-    background-color: #f39c12; 
-    border: 1px solid #d35400;
-}
-.make-private:hover { background-color: #e67e22; }
