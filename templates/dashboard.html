@@ -2,13 +2,49 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mis Archivos</title>
+    <title>Panel de Control</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Estilos extra para la tarjeta de usuario */
+        .user-card {
+            background: white; 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: 1px solid #fee2e2; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .user-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .user-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+            gap: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <a href="/logout" class="logout-link">Cerrar Sesión</a>
-        <h1>Hola, {{ name }} 👋</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 1.5rem;">Hola, {{ name }} 👋</h1>
+            <div style="display: flex; gap: 10px;">
+                <a href="/" style="text-decoration: none;">
+                    <button class="btn-primary" style="background-color: #6366f1; width: auto; padding: 5px 15px; font-size: 0.8rem;">🏠 Ir al Inicio</button>
+                </a>
+                <a href="/logout" class="logout-link" style="align-self: center;">Cerrar Sesión</a>
+            </div>
+        </div>
+        
+        <p style="color: #666; margin-top: -10px;">
+            Tu rol: 
+            {% if role == 'superadmin' %}
+                <strong style="color: #ef4444;">SUPERADMIN (MODO DIOS ⚡)</strong>
+            {% else %}
+                <strong>{{ role|upper }}</strong>
+            {% endif %}
+        </p>
         
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -18,58 +54,108 @@
             {% endif %}
         {% endwith %}
 
-        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px dashed #ccc;">
-            <h3>📤 Subir nuevo archivo</h3>
+        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 1rem; border: 1px dashed #ccc; margin-top: 20px;">
+            <h3>📤 Subir Archivo</h3>
             <form method="POST" action="/upload" enctype="multipart/form-data">
                 <input type="file" name="file" required>
                 
-                <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" name="is_public" id="publicCheck" style="width: auto;">
-                    <label for="publicCheck" style="margin: 0; cursor: pointer; color: #555;">
-                        Hacer visible para todo el público 🌍
-                    </label>
+                <div style="margin-top: 10px;">
+                    <label style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;">¿Quién puede ver esto?</label>
+                    <select name="visibility" style="width: 100%; padding: 10px; border-radius: 0.75rem; border: 1px solid #d1d5db; background: white;">
+                        <option value="private">🔒 Solo yo (Privado)</option>
+                        <option value="salud">🏥 Área Salud (Médicos y Técnicos)</option>
+                        <option value="admin">📋 Solo Administrativos</option>
+                        <option value="public">🌍 Todo el Público</option>
+                    </select>
                 </div>
+
                 <button type="submit" class="btn-upload">Subir Archivo</button>
             </form>
         </div>
 
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
 
-        <h3>📁 Tus Archivos</h3>
+        <h3>
+            📁 
+            {% if role == 'superadmin' %}
+                Gestión Total de Archivos
+            {% else %}
+                Tus Archivos Subidos
+            {% endif %}
+        </h3>
+
         <ul>
             {% for file in files %}
-                <li style="display: flex; justify-content: space-between; align-items: center;">
-                    
+                <li>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 1.2em;">
-                            {% if file.is_public %} 🌍 {% else %} 🔒 {% endif %}
+                        <span style="font-size: 1.2rem;" title="Visibilidad">
+                            {% if file.visibility == 'public' %} 🌍
+                            {% elif file.visibility == 'salud' %} 🏥
+                            {% elif file.visibility == 'admin' %} 📋
+                            {% else %} 🔒
+                            {% endif %}
                         </span>
-                        <strong>{{ file.filename }}</strong>
+                        
+                        <div>
+                            <strong>{{ file.filename }}</strong>
+                            <br>
+                            <small style="color: #666;">
+                                Propietario: <b style="color: #4f46e5;">{{ file.owner.username }}</b>
+                                | 
+                                Visibilidad: <span style="font-style: italic;">{{ file.visibility }}</span>
+                            </small>
+                        </div>
                     </div>
 
                     <div style="display: flex; gap: 5px;">
-                        
-                        <a href="{{ url_for('toggle_privacy', file_id=file.id) }}" style="text-decoration: none;">
-                            {% if file.is_public %}
-                                <button class="btn-privacy make-private" title="Hacer Privado">Cambiar a 🔒</button>
-                            {% else %}
-                                <button class="btn-privacy make-public" title="Hacer Público">Cambiar a 🌍</button>
-                            {% endif %}
-                        </a>
-
                         <a href="{{ url_for('download', file_id=file.id) }}">
                             <button class="btn-download">Bajar</button>
                         </a>
-                        
-                        <a href="{{ url_for('delete', file_id=file.id) }}">
-                            <button class="btn-delete">X</button>
+                        <a href="{{ url_for('delete', file_id=file.id) }}" onclick="return confirm('¿Seguro que quieres borrar este archivo?');">
+                            <button class="btn-delete">Borrar</button>
                         </a>
                     </div>
                 </li>
             {% else %}
-                <p style="text-align: center; color: #777;">No has subido archivos aún.</p>
+                <p style="text-align: center; color: #777;">No hay archivos en el sistema.</p>
             {% endfor %}
         </ul>
-    </div>
+
+        {% if role == 'superadmin' %}
+            <hr style="margin: 40px 0; border: 0; border-top: 2px solid #ef4444;">
+            
+            <h3 style="color: #ef4444; display: flex; align-items: center; gap: 10px;">
+                💀 Zona de Peligro: Gestión de Usuarios
+            </h3>
+            <p style="color: #888; font-size: 0.9rem; margin-bottom: 20px;">
+                Cuidado: Eliminar un usuario borrará también todos sus archivos físicos y de base de datos.
+            </p>
+            
+            <div class="user-grid">
+                {% for user in users %}
+                    {% if user.id != current_user.id %}
+                    <div class="user-card">
+                        <div style="font-weight: bold; font-size: 1.1rem; color: #111827;">{{ user.username }}</div>
+                        <div style="color: #6b7280; font-size: 0.9rem; margin-bottom: 5px;">{{ user.email }}</div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="background: #e5e7eb; color: #374151; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">
+                                {{ user.role|upper }}
+                            </span>
+                        </div>
+                        
+                        <a href="{{ url_for('delete_user', user_id=user.id) }}" onclick="return confirm('⚠️ PELIGRO:\n\nEstás a punto de eliminar al usuario {{ user.username }}.\nEsto borrará PERMANENTEMENTE todos sus archivos.\n\n¿Estás seguro?');" style="text-decoration: none;">
+                            <button class="btn-delete" style="width: 100%; justify-content: center;">
+                                Expulsar Usuario 🚫
+                            </button>
+                        </a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <p style="color: #777;">No hay otros usuarios registrados.</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <br><br><br> </div>
 </body>
 </html>

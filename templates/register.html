@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>Crear Cuenta</h2>
+        <h2>Crear Cuenta Nueva</h2>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -19,8 +19,8 @@
 
         <form method="POST" action="/register">
             <div>
-                <label>Usuario</label>
-                <input type="text" name="username" required placeholder="Elige un nombre de usuario">
+                <label>Nombre de Usuario</label>
+                <input type="text" name="username" required placeholder="Elige un usuario único">
             </div>
 
             <div>
@@ -29,8 +29,16 @@
             </div>
 
             <div>
+                <label>Rol / Profesión</label>
+                <select name="role" style="width: 100%; padding: 12px; border-radius: 0.75rem; border: 1px solid #d1d5db; background-color: #f9fafb;">
+                    <option value="administrativo">Administrativo (Gestión)</option>
+                    <option value="tecnico">Técnico (Salud)</option>
+                    <option value="medico">Médico (Salud)</option>
+                </select>
+            </div>
+            <div>
                 <label>Contraseña</label>
-                <input type="password" name="password" required placeholder="Elige una contraseña segura">
+                <input type="password" name="password" required placeholder="Contraseña segura">
             </div>
 
             <button type="submit" class="btn-primary">Registrarse</button>

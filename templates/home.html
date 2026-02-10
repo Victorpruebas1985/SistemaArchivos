@@ -2,97 +2,84 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Explorador de Archivos</title>
+    <title>Inicio - Sistema de Archivos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* Estilos específicos para el Buscador y Sugerencias */
-        .search-container {
-            position: relative;
-            max-width: 500px;
-            margin: 0 auto 20px auto;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-input {
-            flex-grow: 1;
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        /* Lista de sugerencias flotante */
+        /* Estilos para el buscador y sugerencias */
+        .search-container { position: relative; max-width: 600px; margin: 0 auto 30px auto; }
         .suggestions-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 5px 5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            z-index: 1000;
-            display: none; /* Oculto por defecto */
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 1px solid #ddd; border-top: none;
+            border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            list-style: none; padding: 0; margin: 0; z-index: 1000; display: none;
         }
-
-        .suggestions-list li {
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .suggestions-list li:hover {
-            background-color: #f1f1f1;
-        }
+        .suggestions-list li { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .suggestions-list li:hover { background-color: #f3f4f6; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Pagina de Inicio 🧠</h1>
-        
-        <div style="text-align: right; margin-bottom: 15px;">
-            {% if current_user.is_authenticated %}
-                <span>Hola, <b>{{ current_user.username }}</b></span> | 
-                <a href="/dashboard">Ir a mi Panel</a>
-            {% else %}
-                <a href="/login">Iniciar Sesión</a>
-            {% endif %}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1 style="margin: 0; font-size: 1.8rem;">Pagina de Inicio 🧠</h1>
+            
+            <div style="display: flex; gap: 10px; align-items: center;">
+                {% if current_user.is_authenticated %}
+                    <div style="text-align: right; margin-right: 10px;">
+                        <span style="display: block; font-weight: bold;">Hola, {{ current_user.username }} 👋</span>
+                        <small style="color: #666;">{{ current_user.role|upper }}</small>
+                    </div>
+                    <a href="/dashboard" style="text-decoration: none;">
+                        <button class="btn-primary" style="padding: 8px 15px; font-size: 0.9rem;">Ir a mi Panel 🚀</button>
+                    </a>
+                {% else %}
+                    <a href="/login" style="text-decoration: none;">
+                        <button class="btn-primary" style="width: auto;">Iniciar Sesión</button>
+                    </a>
+                {% endif %}
+            </div>
         </div>
 
         <div class="search-container">
-            <div class="search-box">
-                <input type="text" id="searchInput" class="search-input" placeholder="Escribe para buscar (ej: 'dcumento')..." autocomplete="off">
-            </div>
+            <input type="text" id="searchInput" class="search-input" placeholder="Escribe para buscar (ej: 'dcumento')..." autocomplete="off">
             <ul id="suggestions" class="suggestions-list"></ul>
         </div>
 
-        <hr>
+        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
 
         <h3>📂 Archivos Recientes</h3>
-        <ul id="filesList">
+        
+        <ul>
             {% for file in files %}
                 <li>
-                    <span>
-                        {% if file.is_public %} 🌍 {% else %} 🔒 {% endif %}
-                        <strong>{{ file.filename }}</strong> 
-                        <br><small style="color: grey;">Subido por: {{ file.owner.username }}</small>
-                    </span>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="font-size: 1.5rem;" title="{{ file.visibility }}">
+                            {% if file.visibility == 'public' %} 🌍
+                            {% elif file.visibility == 'salud' %} 🏥
+                            {% elif file.visibility == 'admin' %} 📋
+                            {% else %} 🔒
+                            {% endif %}
+                        </span>
+
+                        <div>
+                            <strong style="font-size: 1.1rem;">{{ file.filename }}</strong>
+                            <br>
+                            <small style="color: grey;">
+                                Subido por: <b>{{ file.owner.username }}</b>
+                                <span style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; margin-left: 5px; font-size: 0.75rem;">
+                                    {{ file.visibility|upper }}
+                                </span>
+                            </small>
+                        </div>
+                    </div>
+
                     <a href="{{ url_for('download', file_id=file.id) }}">
                         <button class="btn-download">Descargar</button>
                     </a>
                 </li>
             {% else %}
-                <p style="text-align: center; color: #777;">No hay archivos para mostrar.</p>
+                <p style="text-align: center; color: #777; padding: 20px;">
+                    No hay archivos disponibles para tu perfil.
+                </p>
             {% endfor %}
         </ul>
     </div>
@@ -101,37 +88,23 @@
         const input = document.getElementById('searchInput');
         const suggestionsBox = document.getElementById('suggestions');
 
-        // Escuchar cada vez que el usuario levanta una tecla
         input.addEventListener('keyup', function() {
             const query = input.value;
-
             if (query.length < 2) {
                 suggestionsBox.style.display = 'none';
                 return;
             }
 
-            // Llamar al servidor (API)
             fetch(`/api/search_suggestions?q=${query}`)
                 .then(response => response.json())
                 .then(data => {
-                    suggestionsBox.innerHTML = ''; // Limpiar lista anterior
-                    
+                    suggestionsBox.innerHTML = '';
                     if (data.length > 0) {
                         suggestionsBox.style.display = 'block';
-                        
                         data.forEach(item => {
                             const li = document.createElement('li');
-                            // Mostrar nombre y un botón pequeño de descarga directa
-                            li.innerHTML = `
-                                <span>${item.filename}</span>
-                                <small style="color:#aaa">Coincidencia: ${item.score}%</small>
-                            `;
-                            
-                            // Al hacer clic en la sugerencia, descargamos directamente o rellenamos
-                            li.onclick = function() {
-                                window.location.href = `/download/${item.id}`;
-                            };
-                            
+                            li.innerHTML = `<span>${item.filename}</span> <small style="color:#aaa">Score: ${item.score}</small>`;
+                            li.onclick = function() { window.location.href = `/download/${item.id}`; };
                             suggestionsBox.appendChild(li);
                         });
                     } else {
@@ -140,11 +113,8 @@
                 });
         });
 
-        // Ocultar sugerencias si hago clic fuera
         document.addEventListener('click', function(e) {
-            if (e.target !== input) {
-                suggestionsBox.style.display = 'none';
-            }
+            if (e.target !== input) { suggestionsBox.style.display = 'none'; }
         });
     </script>
 </body>
