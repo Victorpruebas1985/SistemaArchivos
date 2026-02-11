@@ -2,38 +2,54 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Intranet</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h2>Bienvenido de nuevo</h2>
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="flash-msg">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            
+            <div class="auth-header">
+                <div style="font-size: 3rem; margin-bottom: 10px;">🔐</div>
+                <h2>Bienvenido</h2>
+                <p>Ingresa tus credenciales para acceder</p>
+            </div>
 
-        <form method="POST" action="/login">
-            <div>
-                <label>Usuario</label>
-                <input type="text" name="username" required placeholder="Ingresa tu usuario">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div style="background: #fee2e2; color: #991b1b; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/login">
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" name="username" class="form-control" placeholder="Ej: victor" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">
+                    Entrar al Sistema 👉
+                </button>
+            </form>
+
+            <div class="auth-links">
+                <a href="/forgot_password">¿Olvidaste tu contraseña?</a>
+                <span>¿Eres nuevo? <a href="/register">Crear una cuenta</a></span>
             </div>
-            <div>
-                <label>Contraseña</label>
-                <input type="password" name="password" required placeholder="Ingresa tu contraseña">
-            </div>
-            <button type="submit" class="btn-primary">Entrar</button>
-        </form>
-        
-        <div style="text-align: center; margin-top: 10px;">
-            <a href="/forgot_password" style="font-size: 14px; color: #777;">¿Olvidaste tu contraseña?</a>
+
         </div>
-        
-        <a href="/register" class="link-text">¿No tienes cuenta? Regístrate aquí</a>
     </div>
+
 </body>
 </html>

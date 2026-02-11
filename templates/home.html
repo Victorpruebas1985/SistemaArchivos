@@ -2,119 +2,165 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Inicio - Sistema de Archivos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intranet Corporativa</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        /* Estilos para el buscador y sugerencias */
-        .search-container { position: relative; max-width: 600px; margin: 0 auto 30px auto; }
-        .suggestions-list {
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: white; border: 1px solid #ddd; border-top: none;
-            border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            list-style: none; padding: 0; margin: 0; z-index: 1000; display: none;
-        }
-        .suggestions-list li { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-        .suggestions-list li:hover { background-color: #f3f4f6; }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <h1 style="margin: 0; font-size: 1.8rem;">Pagina de Inicio 🧠</h1>
-            
-            <div style="display: flex; gap: 10px; align-items: center;">
+
+    <div class="intranet-container">
+        
+        <div class="header-section">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="background: #e0e7ff; padding: 10px; border-radius: 50%; font-size: 1.5rem;">🏥</div>
+                <div>
+                    <h2 style="margin: 0;">Portal Interno</h2>
+                    <small style="color: #666;">Sistema de Gestión</small>
+                </div>
+            </div>
+
+            <div>
                 {% if current_user.is_authenticated %}
-                    <div style="text-align: right; margin-right: 10px;">
-                        <span style="display: block; font-weight: bold;">Hola, {{ current_user.username }} 👋</span>
-                        <small style="color: #666;">{{ current_user.role|upper }}</small>
-                    </div>
-                    <a href="/dashboard" style="text-decoration: none;">
-                        <button class="btn-primary" style="padding: 8px 15px; font-size: 0.9rem;">Ir a mi Panel 🚀</button>
-                    </a>
+                    <span style="margin-right: 15px;">Hola, <b>{{ current_user.username }}</b></span>
+                    <a href="/dashboard" class="btn-action btn-blue">Mi Panel 📂</a>
                 {% else %}
-                    <a href="/login" style="text-decoration: none;">
-                        <button class="btn-primary" style="width: auto;">Iniciar Sesión</button>
-                    </a>
+                    <a href="/login" class="btn-action btn-blue">Iniciar Sesión 🔐</a>
                 {% endif %}
             </div>
         </div>
 
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Escribe para buscar (ej: 'dcumento')..." autocomplete="off">
-            <ul id="suggestions" class="suggestions-list"></ul>
+        <div class="widget widget-time">
+            <div class="clock-container">
+                <div class="time-wrapper">
+                    <span id="hours">--</span>:<span id="minutes">--</span>
+                    <span id="seconds" class="seconds-small">00</span>
+                </div>
+                <div id="date" class="date-badge">Cargando fecha...</div>
+            </div>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+        <div class="widget widget-weather">
+            <div style="font-size: 2rem;">🌤️</div>
+            <div id="weather-temp" class="weather-temp">--°C</div>
+            <div id="weather-desc" class="weather-desc">Actualizando...</div>
+            <div class="weather-loc">Corrientes Capital</div>
+        </div>
 
-        <h3>📂 Archivos Recientes</h3>
-        
-        <ul>
-            {% for file in files %}
-                <li>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span style="font-size: 1.5rem;" title="{{ file.visibility }}">
-                            {% if file.visibility == 'public' %} 🌍
-                            {% elif file.visibility == 'salud' %} 🏥
-                            {% elif file.visibility == 'admin' %} 📋
-                            {% else %} 🔒
-                            {% endif %}
-                        </span>
+        <div class="widget widget-files">
+            <h3>🔎 Documentos del Sistema</h3>
+            
+            <input type="text" id="searchInput" class="search-input" placeholder="Buscar archivo, protocolo, guía..." autocomplete="off">
+            <div id="suggestions" style="display:none; background:white; border:1px solid #ccc; position:absolute; z-index:100; width: 45%; border-radius: 0 0 10px 10px;"></div>
 
-                        <div>
-                            <strong style="font-size: 1.1rem;">{{ file.filename }}</strong>
-                            <br>
-                            <small style="color: grey;">
-                                Subido por: <b>{{ file.owner.username }}</b>
-                                <span style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; margin-left: 5px; font-size: 0.75rem;">
-                                    {{ file.visibility|upper }}
-                                </span>
-                            </small>
+            <ul class="file-list">
+                {% for file in files %}
+                    <li class="file-item">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.2rem;">
+                                {% if file.visibility == 'public' %} 🌍
+                                {% elif file.visibility == 'salud' %} 🏥
+                                {% elif file.visibility == 'admin' %} 📋
+                                {% else %} 🔒
+                                {% endif %}
+                            </span>
+                            <div>
+                                <strong>{{ file.filename }}</strong><br>
+                                <small style="color: grey;">De: {{ file.owner.username }}</small>
+                            </div>
                         </div>
-                    </div>
+                        <a href="{{ url_for('download', file_id=file.id) }}" class="btn-action" style="background: #e5e7eb; color: #333;">⬇️</a>
+                    </li>
+                {% else %}
+                    <p style="text-align: center; color: #999; margin-top: 20px;">No hay archivos visibles.</p>
+                {% endfor %}
+            </ul>
+        </div>
 
-                    <a href="{{ url_for('download', file_id=file.id) }}">
-                        <button class="btn-download">Descargar</button>
-                    </a>
-                </li>
-            {% else %}
-                <p style="text-align: center; color: #777; padding: 20px;">
-                    No hay archivos disponibles para tu perfil.
-                </p>
-            {% endfor %}
-        </ul>
+        <div class="widget widget-news">
+            <h3>📰 Novedades</h3>
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #4f46e5;">Nueva política de vacaciones</strong><br>
+                <small style="color: #666;">Hace 2 horas</small>
+                <p style="font-size: 0.9rem;">Se recuerda a todo el personal administrativo cargar sus licencias antes del 20...</p>
+            </div>
+            <hr style="border: 0; border-top: 1px solid #eee;">
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #4f46e5;">Mantenimiento de Servidores</strong><br>
+                <small style="color: #666;">Ayer</small>
+                <p style="font-size: 0.9rem;">Cortes intermitentes programados para el fin de semana.</p>
+            </div>
+        </div>
+
+        <div class="widget widget-photos">
+            <h3>📸 Galería</h3>
+            <div class="photo-grid">
+                <img src="https://picsum.photos/200/200?random=1" alt="Foto 1">
+                <img src="https://picsum.photos/200/200?random=2" alt="Foto 2">
+                <img src="https://picsum.photos/200/200?random=3" alt="Foto 3">
+            </div>
+        </div>
+
     </div>
 
     <script>
+        // 1. RELOJ
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+            
+            const dateString = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('date').textContent = dateString.charAt(0).toUpperCase() + dateString.slice(1);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 2. CLIMA CORRIENTES (-27.46, -58.83)
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=-27.46&longitude=-58.83&current_weather=true')
+            .then(res => res.json())
+            .then(data => {
+                const temp = Math.round(data.current_weather.temperature);
+                document.getElementById('weather-temp').textContent = temp + "°C";
+                document.getElementById('weather-desc').textContent = "Viento: " + data.current_weather.windspeed + " km/h";
+            })
+            .catch(() => {
+                document.getElementById('weather-desc').textContent = "No disponible";
+            });
+
+        // 3. BUSCADOR
         const input = document.getElementById('searchInput');
         const suggestionsBox = document.getElementById('suggestions');
 
         input.addEventListener('keyup', function() {
             const query = input.value;
-            if (query.length < 2) {
-                suggestionsBox.style.display = 'none';
-                return;
-            }
+            if (query.length < 2) { suggestionsBox.style.display = 'none'; return; }
 
             fetch(`/api/search_suggestions?q=${query}`)
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
                     suggestionsBox.innerHTML = '';
                     if (data.length > 0) {
                         suggestionsBox.style.display = 'block';
                         data.forEach(item => {
-                            const li = document.createElement('li');
-                            li.innerHTML = `<span>${item.filename}</span> <small style="color:#aaa">Score: ${item.score}</small>`;
-                            li.onclick = function() { window.location.href = `/download/${item.id}`; };
-                            suggestionsBox.appendChild(li);
+                            const div = document.createElement('div');
+                            div.style.padding = '10px';
+                            div.style.cursor = 'pointer';
+                            div.style.borderBottom = '1px solid #eee';
+                            div.innerHTML = `📄 ${item.filename}`;
+                            div.onclick = () => window.location.href = `/download/${item.id}`;
+                            suggestionsBox.appendChild(div);
                         });
-                    } else {
-                        suggestionsBox.style.display = 'none';
-                    }
+                    } else { suggestionsBox.style.display = 'none'; }
                 });
         });
-
-        document.addEventListener('click', function(e) {
-            if (e.target !== input) { suggestionsBox.style.display = 'none'; }
+        
+        document.addEventListener('click', (e) => {
+            if (e.target !== input) suggestionsBox.style.display = 'none';
         });
     </script>
 </body>

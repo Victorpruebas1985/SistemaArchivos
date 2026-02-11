@@ -1,248 +1,138 @@
-/* style.css - Diseño Moderno 2026 */
-
+/* style.css - Intranet Moderna 2026 */
 :root {
-    --primary-color: #4f46e5; /* Índigo moderno */
-    --primary-hover: #4338ca;
-    --bg-color: #f3f4f6;
-    --card-bg: #ffffff;
-    --text-main: #111827;
-    --text-muted: #6b7280;
-    --danger: #ef4444;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-* {
-    box-sizing: border-box;
+    --primary: #4f46e5;
+    --bg-body: #f3f4f6;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-main: #1f2937;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 body {
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg-color);
-    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-    background-size: 20px 20px; /* Sutil patrón de puntos */
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--bg-body);
     margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    color: var(--text-main);
     padding: 20px;
-}
-
-/* Tarjeta Principal */
-.container {
-    background-color: var(--card-bg);
-    width: 100%;
-    max-width: 650px;
-    padding: 2.5rem;
-    border-radius: 1.5rem; /* Bordes muy redondeados */
-    box-shadow: var(--shadow-lg);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-/* Títulos */
-h1, h2 {
-    font-weight: 800;
     color: var(--text-main);
-    text-align: center;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.025em;
 }
 
-h3 {
-    font-weight: 600;
-    margin-top: 2rem;
-    color: var(--text-main);
-    border-bottom: 2px solid var(--bg-color);
-    padding-bottom: 10px;
+/* --- LAYOUT DE INTRANET (GRILLA) --- */
+.intranet-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr); /* 12 columnas */
+    gap: 20px;
 }
 
-/* Enlaces y Textos */
-a { text-decoration: none; color: inherit; }
-
-.link-text {
-    text-align: center;
-    display: block;
-    margin-top: 1.5rem;
-    color: var(--primary-color);
-    font-weight: 500;
-    transition: color 0.2s;
-}
-.link-text:hover { text-decoration: underline; }
-
-.logout-link {
-    float: right;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-.logout-link:hover { color: var(--danger); }
-
-/* Formularios e Inputs */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    margin-top: 1.5rem;
-}
-
-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 0.25rem;
-    display: block;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"],
-input[type="file"] {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    transition: all 0.2s;
-    background-color: #f9fafb;
-}
-
-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    background-color: white;
-}
-
-/* Buscador Específico */
-.search-container { position: relative; margin-bottom: 2rem; }
-.search-box { display: flex; gap: 10px; }
-.search-input {
-    border-radius: 50px !important; /* Estilo píldora */
-    padding-left: 1.5rem !important;
-    border: 1px solid #d1d5db;
-    box-shadow: var(--shadow-sm);
-}
-
-/* Botones Generales */
-button {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 0.75rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-button:active { transform: scale(0.98); }
-
-/* Variantes de Botones */
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-    width: 100%;
-    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
-}
-.btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
-
-.btn-upload {
-    background-color: var(--text-main);
-    color: white;
-    width: 100%;
-    margin-top: 1rem;
-}
-.btn-upload:hover { background-color: black; }
-
-.btn-download {
-    background-color: #e0e7ff; /* Azul muy suave */
-    color: var(--primary-color);
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-}
-.btn-download:hover { background-color: #c7d2fe; }
-
-.btn-delete {
-    background-color: #fee2e2; /* Rojo suave */
-    color: var(--danger);
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-}
-.btn-delete:hover { background-color: #fecaca; }
-
-/* Botones de Privacidad (Tags) */
-.btn-privacy {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.75rem;
-    border-radius: 50px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 700;
-}
-.make-public { background-color: #ecfdf5; color: var(--success); border: 1px solid #d1fae5; }
-.make-public:hover { background-color: #d1fae5; }
-
-.make-private { background-color: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
-.make-private:hover { background-color: #fde68a; }
-
-/* Lista de Archivos */
-ul { list-style: none; padding: 0; }
-
-li {
-    background: white;
-    border: 1px solid #f3f4f6;
-    margin-bottom: 0.75rem;
-    padding: 1rem;
-    border-radius: 1rem;
+/* --- HEADER --- */
+.header-section {
+    grid-column: span 12;
+    background: var(--card-bg);
+    padding: 15px 30px;
+    border-radius: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
 }
 
-li:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: #e5e7eb;
+/* --- ESTILOS GENERALES DE WIDGETS --- */
+.widget {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,0.5);
 }
 
-/* Sugerencias de búsqueda (Dropdown) */
-.suggestions-list {
-    position: absolute;
-    top: 110%;
-    left: 0; right: 0;
-    background: white;
-    border: 1px solid #f3f4f6;
-    border-radius: 1rem;
-    box-shadow: var(--shadow-lg);
-    list-style: none;
-    padding: 0.5rem;
-    z-index: 1000;
-    display: none;
+.widget h3 { 
+    margin-top: 0; 
+    border-bottom: 2px solid #f0f0f0; 
+    padding-bottom: 10px; 
+    font-size: 1.1rem; 
+    color: #4b5563; 
 }
-.suggestions-list li {
-    margin: 0;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-}
-.suggestions-list li:hover { background-color: #f9fafb; cursor: pointer; }
 
-/* Mensajes Flash */
-.flash-msg {
-    background-color: #eff6ff;
-    color: #1e40af;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    margin-bottom: 1.5rem;
-    border-left: 4px solid var(--primary-color);
-    font-size: 0.9rem;
+/* --- WIDGET 1: RELOJ (IZQUIERDA - ÍNDIGO) --- */
+.widget-time { 
+    grid-column: span 3; 
+    background: linear-gradient(135deg, #4f46e5, #818cf8); /* Color Índigo */
+    color: white; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 15px;
+}
+
+.clock-container { text-align: center; }
+
+.time-wrapper {
+    font-size: 3.2rem; 
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 5px;
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.seconds-small { font-size: 1.2rem; opacity: 0.8; margin-left: 5px; font-weight: 400; }
+
+.date-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+/* --- WIDGET 2: CLIMA (DERECHA - CELESTE) --- */
+.widget-weather { 
+    grid-column: span 3; 
+    background: linear-gradient(135deg, #3b82f6, #60a5fa); /* Color Celeste */
+    color: white; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center;
+}
+
+.weather-temp { font-size: 2.8rem; font-weight: 700; line-height: 1; margin: 5px 0; }
+.weather-desc { font-size: 0.9rem; opacity: 0.9; }
+.weather-loc { font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; margin-top: 5px;}
+
+/* --- WIDGET CENTRAL (ARCHIVOS) --- */
+.widget-files { grid-column: span 6; grid-row: span 2; } 
+
+/* --- WIDGETS LATERALES --- */
+.widget-news { grid-column: span 4; height: 350px; overflow-y: auto; }
+.widget-photos { grid-column: span 2; }
+
+/* Estilos de Archivos */
+.search-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 15px; }
+.file-list { list-style: none; padding: 0; max-height: 400px; overflow-y: auto; }
+.file-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
+.btn-action { padding: 5px 12px; border-radius: 8px; border: none; cursor: pointer; color: white; font-weight: bold; text-decoration: none; font-size: 0.8rem; }
+.btn-blue { background-color: var(--primary); }
+.btn-blue:hover { background-color: #4338ca; }
+
+/* Galería */
+.photo-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.photo-grid img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; }
+
+/* --- LOGIN / REGISTRO ESTILOS --- */
+.auth-wrapper { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+.auth-card { background: white; width: 100%; max-width: 400px; padding: 2.5rem; border-radius: 1.5rem; box-shadow: var(--shadow); text-align: center; }
+.auth-header h2 { margin: 10px 0; font-size: 1.5rem; }
+.form-group { margin-bottom: 15px; text-align: left; }
+.form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+
+/* Responsivo */
+@media (max-width: 900px) {
+    .intranet-container { display: flex; flex-direction: column; }
 }
